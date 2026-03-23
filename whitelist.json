@@ -11,7 +11,7 @@
       "policy": "open"
     },
     "com.waze": {
-      "policy": "global"
+      "policy": "blocked"
     },
     "com.example.custom_app": {
       "policy": "custom",
