@@ -14,6 +14,7 @@
       "policy": "custom",
       "custom_whitelist":[
         "waze.com/supporthub"
+      ]
     },
     "com.example.custom_app": {
       "policy": "custom",
