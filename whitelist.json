@@ -1,7 +1,7 @@
 {
   "global_whitelist":[
-    "google.com",
-    "waze.com"
+    "example.com",
+    "more-example.com"
   ],
   "apps": {
     "com.example.blocked_app": {
@@ -11,10 +11,7 @@
       "policy": "open"
     },
     "com.waze": {
-      "policy": "custom",
-      "custom_whitelist":[
-        "waze.com/supporthub"
-      ]
+      "policy": "global"
     },
     "com.example.custom_app": {
       "policy": "custom",
