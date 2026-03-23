@@ -11,7 +11,7 @@
       ]
     },
     "com.tranzmate": {
-      "policy": "global",
+      "policy": "blocked",
       "name": "Moovit: תשלום באוטובוס וברכבת",
       "icon": "https://play-lh.googleusercontent.com/5CIrbVpU4UE_MrXvaNWuc1dYrkM7jcMHLLY98oy0nM110UdMD8RyyXR5hIIKqPO9liJF"
     }
