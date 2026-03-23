@@ -24,6 +24,9 @@
       "policy": "global",
       "name": "קול הלשון",
       "icon": "https://play-lh.googleusercontent.com/Zle_9gO2SlMcNtAcB9_5bTi-HURX3kKeJqBNOfFJmJWMssIKDwIUsaXpHF_jh56TxvWw"
+    },
+    "com.lilor159.abualiexpresss": {
+      "policy": "open"
     }
   }
 }
