@@ -1,21 +1,15 @@
 {
   "global_whitelist": [],
   "apps": {
-    "com.example.blocked_app": {
-      "policy": "blocked"
+    "com.waze": {
+      "policy": "global",
+      "name": "Waze: ניווט ועדכוני תנועה",
+      "icon": "https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw"
     },
     "com.tranzmate": {
-      "policy": "open"
-    },
-    "com.waze": {
-      "policy": "custom",
-      "custom_whitelist": [
-        "waze.com",
-        "private-server.net"
-      ]
-    },
-    "com.khl.www2": {
-      "policy": "open"
+      "policy": "global",
+      "name": "Moovit: תשלום באוטובוס וברכבת",
+      "icon": "https://play-lh.googleusercontent.com/5CIrbVpU4UE_MrXvaNWuc1dYrkM7jcMHLLY98oy0nM110UdMD8RyyXR5hIIKqPO9liJF"
     }
   }
 }
