@@ -1,0 +1,24 @@
+{
+  "global_whitelist":[
+    "google.com",
+    "waze.com"
+  ],
+  "apps": {
+    "com.example.blocked_app": {
+      "policy": "blocked"
+    },
+    "com.tranzmate": {
+      "policy": "open"
+    },
+    "com.waze": {
+      "policy": "global"
+    },
+    "com.example.custom_app": {
+      "policy": "custom",
+      "custom_whitelist":[
+        "myspecial-api.com",
+        "private-server.net"
+      ]
+    }
+  }
+}
