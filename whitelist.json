@@ -1,7 +1,5 @@
 {
-  "global_whitelist": [
-    "example.com"
-  ],
+  "global_whitelist": [],
   "apps": {
     "com.example.blocked_app": {
       "policy": "blocked"
