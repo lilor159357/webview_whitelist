@@ -1,5 +1,7 @@
 {
-  "global_whitelist": [],
+  "global_whitelist": [
+    "kolhalashon.com"
+  ],
   "apps": {
     "com.waze": {
       "policy": "custom",
@@ -17,6 +19,11 @@
       "custom_whitelist": [
         "support.moovitapp.com/hc/he/categories/4403004531090-%d7%9e%d7%94-%d7%97%d7%93%d7%a9-%d7%91%d7%92%d7%a8%d7%a1%d7%94-%d7%96%d7%95"
       ]
+    },
+    "com.khl.www2": {
+      "policy": "global",
+      "name": "קול הלשון",
+      "icon": "https://play-lh.googleusercontent.com/Zle_9gO2SlMcNtAcB9_5bTi-HURX3kKeJqBNOfFJmJWMssIKDwIUsaXpHF_jh56TxvWw"
     }
   }
 }
