@@ -2,9 +2,13 @@
   "global_whitelist": [],
   "apps": {
     "com.waze": {
-      "policy": "open",
+      "policy": "custom",
       "name": "Waze: ניווט ועדכוני תנועה",
-      "icon": "https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw"
+      "icon": "https://play-lh.googleusercontent.com/r7XL36PVNtnidqy6ikRiW1AHEIsjhePrZ8W5M4cNTQy5ViF3-lIDY47hpvxc84kJ7lw",
+      "custom_whitelist": [
+        "waze.com/supporthub",
+        "support.google.com/waze"
+      ]
     },
     "com.tranzmate": {
       "policy": "global",
