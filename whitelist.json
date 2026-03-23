@@ -1,7 +1,6 @@
 {
-  "global_whitelist":[
-    "example.com",
-    "more-example.com"
+  "global_whitelist": [
+    "example.com"
   ],
   "apps": {
     "com.example.blocked_app": {
@@ -12,14 +11,14 @@
     },
     "com.waze": {
       "policy": "custom",
-      "custom_whitelist":[
+      "custom_whitelist": [
         "waze.com",
         "private-server.net"
       ]
     },
     "com.example.custom_app": {
       "policy": "custom",
-      "custom_whitelist":[
+      "custom_whitelist": [
         "myspecial-api.com",
         "private-server.net"
       ]
