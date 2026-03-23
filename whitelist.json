@@ -14,12 +14,8 @@
         "private-server.net"
       ]
     },
-    "com.example.custom_app": {
-      "policy": "custom",
-      "custom_whitelist": [
-        "myspecial-api.com",
-        "private-server.net"
-      ]
+    "com.khl.www2": {
+      "policy": "open"
     }
   }
 }
