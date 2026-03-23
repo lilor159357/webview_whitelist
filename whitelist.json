@@ -11,7 +11,10 @@
       "policy": "open"
     },
     "com.waze": {
-      "policy": "global"
+      "policy": "custom",
+      "custom_whitelist":[
+        "waze.com",
+        "private-server.net"
     },
     "com.example.custom_app": {
       "policy": "custom",
