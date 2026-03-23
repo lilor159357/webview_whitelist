@@ -11,9 +11,12 @@
       ]
     },
     "com.tranzmate": {
-      "policy": "blocked",
+      "policy": "custom",
       "name": "Moovit: תשלום באוטובוס וברכבת",
-      "icon": "https://play-lh.googleusercontent.com/5CIrbVpU4UE_MrXvaNWuc1dYrkM7jcMHLLY98oy0nM110UdMD8RyyXR5hIIKqPO9liJF"
+      "icon": "https://play-lh.googleusercontent.com/5CIrbVpU4UE_MrXvaNWuc1dYrkM7jcMHLLY98oy0nM110UdMD8RyyXR5hIIKqPO9liJF",
+      "custom_whitelist": [
+        "support.moovitapp.com/hc/he/categories/4403004531090-%d7%9e%d7%94-%d7%97%d7%93%d7%a9-%d7%91%d7%92%d7%a8%d7%a1%d7%94-%d7%96%d7%95"
+      ]
     }
   }
 }
