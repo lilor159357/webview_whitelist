@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מנהל סינון Webview | מודרני</title>
     
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons (מודרניים ויפים) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <!-- הגדרות עיצוב מותאמות אישית -->
     <script>
         tailwind.config = {
             theme: {
@@ -23,9 +20,7 @@
                         success: '#10b981',
                         danger: '#ef4444'
                     },
-                    fontFamily: {
-                        sans:['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                    }
+                    fontFamily: { sans:['system-ui', '-apple-system', 'sans-serif'] }
                 }
             }
         }
@@ -33,47 +28,70 @@
     
     <style>
         body { background-color: #0b1120; color: #f8fafc; overflow-x: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .smooth { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* סקרולבר מודרני */
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .smooth { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* הגדרות כיווניות טקסט אנגלי */
         .ltr-text { direction: ltr; text-align: left; }
+        
+        /* Loading Spinner */
+        .spinner { border: 3px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans">
 
-    <!-- Navbar / Header -->
-    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
+    <!-- מסך התחברות (Login Screen) -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] bg-darkBg flex flex-col items-center justify-center p-4">
+        <div class="absolute inset-0 bg-primary/5 blur-[150px] rounded-full w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+        <div class="glass p-10 rounded-3xl max-w-md w-full text-center shadow-2xl relative z-10 border border-slate-700/50">
+            <div class="bg-primary/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-primary/30">
+                <i class="ph-fill ph-shield-check text-5xl text-primary"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Webview Filter</h1>
+            <p class="text-slate-400 mb-8">התחבר כדי לנהל את הרשימה הלבנה של המערכת ישירות מול GitHub.</p>
+            <button onclick="loginWithGitHub()" class="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold text-lg px-6 py-4 rounded-xl flex items-center justify-center gap-3 smooth shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                <i class="ph-fill ph-github-logo text-2xl"></i> התחבר עם GitHub
+            </button>
+        </div>
+    </div>
+
+    <!-- מסך טעינה גלובלי (Loader) -->
+    <div id="loaderScreen" class="fixed inset-0 z-[110] bg-darkBg/90 backdrop-blur-md hidden flex-col items-center justify-center">
+        <div class="spinner mb-4 w-12 h-12 border-4"></div>
+        <p id="loaderText" class="text-primary font-medium tracking-wide">טוען נתונים מ-GitHub...</p>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="mainNav" class="glass sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-lg hidden opacity-0 smooth">
         <div class="flex items-center gap-4">
-            <div class="bg-primary/20 p-2 rounded-xl text-primary">
+            <div class="bg-primary/20 p-2.5 rounded-xl text-primary border border-primary/30">
                 <i class="ph-fill ph-shield-check text-2xl"></i>
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-wide">Webview Filter Pro</h1>
-                <p class="text-xs text-slate-400">ניהול רשימה לבנה - עריכת JSON</p>
+                <p id="repoNameDisplay" class="text-xs text-slate-400 dir-ltr ltr-text">lilor159357 / webview_whitelist</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <div id="saveIndicator" class="hidden flex items-center gap-2 text-sm text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-full border border-yellow-400/20">
-                <i class="ph ph-warning-circle text-lg"></i>
-                <span>ישנם שינויים שלא נשמרו</span>
+            <div id="saveIndicator" class="hidden items-center gap-2 text-sm text-yellow-400 bg-yellow-400/10 px-4 py-2 rounded-xl border border-yellow-400/20 shadow-inner">
+                <i class="ph-fill ph-warning-circle text-lg"></i>
+                <span class="font-medium">ישנם שינויים</span>
             </div>
-            <button onclick="exportJSON()" class="bg-primary hover:bg-blue-600 smooth text-white px-5 py-2.5 rounded-xl font-medium shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center gap-2">
-                <i class="ph ph-code text-lg"></i> הצג JSON
+            <button onclick="saveToGitHub()" id="saveBtn" class="bg-primary hover:bg-blue-600 smooth text-white px-5 py-2.5 rounded-xl font-medium shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center gap-2 outline-none">
+                <i class="ph ph-cloud-arrow-up text-xl"></i> שמור לגיטהאב
+            </button>
+            <button onclick="logout()" class="bg-slate-800 hover:bg-slate-700 smooth text-slate-300 px-4 py-2.5 rounded-xl font-medium border border-slate-600 flex items-center gap-2 outline-none">
+                <i class="ph ph-sign-out text-xl"></i>
             </button>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- תפריט צד (Tabs) -->
+    <main id="mainContent" class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 hidden opacity-0 smooth">
+        <!-- תפריט צד -->
         <aside class="lg:col-span-3 space-y-3">
             <button onclick="switchTab('global')" id="tab-global" class="w-full text-right px-5 py-4 rounded-2xl bg-primary/10 border border-primary/30 text-primary font-medium smooth flex items-center justify-between shadow-lg">
                 <span class="flex items-center gap-3"><i class="ph ph-globe-hemisphere-east text-xl"></i> רשימה גלובלית</span>
@@ -85,10 +103,8 @@
             </button>
         </aside>
 
-        <!-- אזור עבודה (Content) -->
+        <!-- אזור עבודה -->
         <section class="lg:col-span-9 glass rounded-3xl p-6 md:p-8 min-h-[70vh] shadow-2xl relative overflow-hidden">
-            
-            <!-- עיגול רקע עיצובי -->
             <div class="absolute -top-32 -left-32 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
 
             <!-- Tab: Global Whitelist -->
@@ -97,18 +113,14 @@
                     <h2 class="text-3xl font-bold text-white mb-2">רשימה גלובלית</h2>
                     <p class="text-slate-400">כתובות שיוגדרו כאן יהיו פתוחות עבור כל אפליקציה שהמדיניות שלה היא <span class="text-blue-400 bg-blue-400/10 px-1 rounded">global</span>.</p>
                 </header>
-                
                 <div class="relative group">
                     <input type="text" id="globalInput" placeholder="הוסף כתובת (למשל google.com) ולחץ Enter..." 
-                           class="w-full bg-slate-900/50 border border-slate-700 group-hover:border-slate-500 focus:border-primary focus:ring-1 focus:ring-primary rounded-2xl px-5 py-4 text-white outline-none smooth ltr-text placeholder:text-right">
+                           class="w-full bg-slate-900/50 border border-slate-700 focus:border-primary rounded-2xl px-5 py-4 text-white outline-none smooth ltr-text placeholder:text-right">
                     <button onclick="addGlobalDomain()" class="absolute left-2 top-2 bottom-2 bg-primary hover:bg-blue-600 text-white px-4 rounded-xl smooth flex items-center justify-center shadow-lg">
                         <i class="ph ph-plus text-xl"></i>
                     </button>
                 </div>
-
-                <div id="globalList" class="flex flex-wrap gap-3 mt-6">
-                    <!-- Global domains will load here -->
-                </div>
+                <div id="globalList" class="flex flex-wrap gap-3 mt-6"></div>
             </div>
 
             <!-- Tab: Apps Management -->
@@ -116,18 +128,17 @@
                 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h2 class="text-3xl font-bold text-white mb-2">חוקי אפליקציות</h2>
-                        <p class="text-slate-400">הגדר הרשאות לכל אפליקציה בנפרד (Package Name).</p>
+                        <p class="text-slate-400">הגדר הרשאות לכל חבילה (Package Name).</p>
                     </div>
                     <button onclick="toggleAddAppForm()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium smooth flex items-center gap-2 shadow-lg">
                         <i class="ph ph-plus-circle text-lg text-accent"></i> אפליקציה חדשה
                     </button>
                 </header>
 
-                <!-- טופס הוספת אפליקציה (מוסתר כברירת מחדל) -->
                 <div id="addAppForm" class="hidden bg-slate-900/80 border border-slate-700 p-5 rounded-2xl mb-6 smooth">
                     <div class="flex flex-col md:flex-row gap-3">
                         <input type="text" id="newAppPackage" placeholder="com.example.app..." class="flex-grow bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-white outline-none focus:border-accent ltr-text placeholder:text-right">
-                        <select id="newAppPolicy" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-white outline-none cursor-pointer">
+                        <select id="newAppPolicy" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-white outline-none">
                             <option value="blocked">חסום (Blocked)</option>
                             <option value="open">פתוח (Open)</option>
                             <option value="global">גלובלי (Global)</option>
@@ -137,57 +148,40 @@
                     </div>
                 </div>
 
-                <!-- חיפוש אפליקציות -->
                 <div class="relative mb-6">
                     <i class="ph ph-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                     <input type="text" id="searchInput" onkeyup="filterApps()" placeholder="חפש אפליקציה..." 
                            class="w-full bg-slate-900/30 border border-slate-700/50 focus:border-slate-500 rounded-2xl pr-12 pl-4 py-3 text-white outline-none smooth ltr-text placeholder:text-right">
                 </div>
 
-                <div id="appsList" class="space-y-4">
-                    <!-- Apps will load here -->
-                </div>
+                <div id="appsList" class="space-y-4"></div>
             </div>
-
         </section>
     </main>
 
-    <!-- Modal for showing JSON -->
-    <div id="jsonModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4">
-        <div class="bg-cardBg border border-slate-700 rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
-                <h3 class="text-lg font-bold">הקוד המעודכן (whitelist.json)</h3>
-                <button onclick="closeJSON()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-2xl"></i></button>
-            </div>
-            <div class="p-4 overflow-y-auto flex-grow relative ltr-text">
-                <button onclick="copyJSON()" class="absolute top-6 right-6 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 smooth">
-                    <i class="ph ph-copy"></i> העתק
-                </button>
-                <pre id="jsonOutput" class="text-sm text-green-400 font-mono bg-[#0d1117] p-4 rounded-xl overflow-x-auto"></pre>
-            </div>
-        </div>
-    </div>
+    <!-- מנגנון הודעות מתפרצות (Toasts Container) -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- הלוגיקה (JavaScript) -->
     <script>
-        // --- 1. המידע שלנו (State) מבוסס על ה-JSON שלך ---
-        let state = {
-            global_whitelist: [
-                "google.com",
-                "waze.com"
-            ],
-            apps: {
-                "com.example.blocked_app": { policy: "blocked" },
-                "com.tranzmate": { policy: "open" },
-                "com.waze": { policy: "blocked" },
-                "com.example.custom_app": {
-                    policy: "custom",
-                    custom_whitelist: ["myspecial-api.com", "private-server.net"]
-                }
-            }
+        // ==========================================
+        // CONFIGURATION - הגדרות המאגר שלך
+        // ==========================================
+        const CONFIG = {
+            GITHUB_USER: 'lilor159357',
+            GITHUB_REPO: 'webview_whitelist',
+            FILE_PATH: 'whitelist.json',
+            ALLOWED_USERS:['lilor159357', 'chanuta159-design'], // הוספתי את שני המשתמשים שלך
+            GITHUB_CLIENT_ID: 'Ov23ligwsbAgnDvz3yp0' // קליינט ה-OAuth שלך מהקוד הישן
         };
 
-        // --- 2. צבעים ותוויות למצבים (Policies) ---
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let state = { global_whitelist:[], apps: {} };
+        let fileSHA = null;
+        let githubToken = null;
+        let hasUnsavedChanges = false;
+
         const policies = {
             blocked: { name: 'חסום (Blocked)', colors: 'text-red-400 bg-red-400/10 border-red-400/20' },
             open: { name: 'פתוח (Open)', colors: 'text-green-400 bg-green-400/10 border-green-400/20' },
@@ -195,21 +189,194 @@
             custom: { name: 'מותאם (Custom)', colors: 'text-purple-400 bg-purple-400/10 border-purple-400/20' }
         };
 
-        // --- 3. ניהול מעבר בין טאבים ---
+        // ==========================================
+        // HELPERS (Unicode Base64)
+        // ==========================================
+        const encodeUnicode = (str) => btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+        const decodeUnicode = (str) => decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+        // ==========================================
+        // UI COMPONENTS (Toasts & Loaders)
+        // ==========================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const colors = type === 'success' ? 'bg-success/20 border-success/30 text-emerald-400' : 'bg-danger/20 border-danger/30 text-red-400';
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning-octagon';
+            
+            toast.className = `flex items-center gap-3 glass ${colors} px-5 py-3 rounded-2xl shadow-xl transform transition-all duration-300 translate-y-10 opacity-0 border`;
+            toast.innerHTML = `<i class="ph-fill ${icon} text-2xl"></i><span class="font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showLoader(text) {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('loaderScreen').classList.remove('hidden');
+            document.getElementById('loaderScreen').classList.add('flex');
+        }
+
+        function hideLoader() {
+            document.getElementById('loaderScreen').classList.add('hidden');
+            document.getElementById('loaderScreen').classList.remove('flex');
+        }
+
+        function triggerChange() {
+            hasUnsavedChanges = true;
+            document.getElementById('saveIndicator').classList.remove('hidden');
+            document.getElementById('saveIndicator').classList.add('flex');
+            document.getElementById('saveBtn').classList.add('animate-pulse');
+        }
+
+        function clearChangeStatus() {
+            hasUnsavedChanges = false;
+            document.getElementById('saveIndicator').classList.add('hidden');
+            document.getElementById('saveIndicator').classList.remove('flex');
+            document.getElementById('saveBtn').classList.remove('animate-pulse');
+        }
+
+        // ==========================================
+        // GITHUB API INTEGRATION
+        // ==========================================
+        function loginWithGitHub() {
+            window.location.href = `https://github.com/login/oauth/authorize?client_id=${CONFIG.GITHUB_CLIENT_ID}&scope=repo`;
+        }
+
+        function logout() {
+            if(hasUnsavedChanges && !confirm('ישנם שינויים שלא נשמרו. האם אתה בטוח שברצונך להתנתק?')) return;
+            localStorage.removeItem('gh_token');
+            window.location.href = window.location.pathname; // Clear URL parameters
+        }
+
+        async function handleOAuthCallback(code) {
+            showLoader('מאמת מול GitHub...');
+            try {
+                // קריאה לפונקציית ה-Vercel שלך (הנחנו שהיא יושבת ב- /api/github-callback)
+                const res = await fetch(`/api/github-callback?code=${code}`);
+                if (!res.ok) throw new Error('שגיאה בקבלת הטוקן מהשרת.');
+                
+                const data = await res.json();
+                const token = data.token;
+                if (!token) throw new Error('הטוקן חסר בתגובה.');
+
+                // וידוא משתמש
+                const userRes = await fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${token}` } });
+                const userData = await userRes.json();
+
+                if (CONFIG.ALLOWED_USERS.includes(userData.login)) {
+                    localStorage.setItem('gh_token', token);
+                    window.location.href = window.location.pathname; // ניקוי ה-URL
+                } else {
+                    throw new Error(`המשתמש ${userData.login} אינו מורשה למערכת.`);
+                }
+            } catch (error) {
+                hideLoader();
+                alert(`שגיאת התחברות: ${error.message}`);
+                window.location.href = window.location.pathname;
+            }
+        }
+
+        async function loadFromGitHub() {
+            showLoader('טוען הגדרות מהמאגר...');
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.FILE_PATH}`, {
+                    headers: { 'Authorization': `token ${githubToken}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSHA = data.sha;
+                    const jsonContent = decodeUnicode(data.content);
+                    state = JSON.parse(jsonContent);
+                } else if (res.status === 404) {
+                    // קובץ לא קיים - מתחילים נקי
+                    state = { global_whitelist:[], apps: {} };
+                    fileSHA = null;
+                    showToast('לא נמצא קובץ קיים, מתחיל מאפס.', 'success');
+                } else {
+                    throw new Error('שגיאה במשיכת הקובץ מ-GitHub.');
+                }
+                
+                // ודא שמבנה הנתונים תקין גם אם ה-JSON ריק
+                if(!state.global_whitelist) state.global_whitelist =[];
+                if(!state.apps) state.apps = {};
+
+                renderGlobal();
+                renderApps();
+                hideLoader();
+                
+                // הצגת הממשק הראשי והעלמת ה-Login
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainNav').classList.remove('hidden', 'opacity-0');
+                document.getElementById('mainContent').classList.remove('hidden', 'opacity-0');
+
+            } catch (err) {
+                hideLoader();
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function saveToGitHub() {
+            if (!hasUnsavedChanges) return showToast('אין שינויים לשמור.', 'success');
+            
+            showLoader('שומר שינויים ל-GitHub...');
+            
+            // המרת האובייקט ל-JSON יפהפה
+            const jsonString = JSON.stringify(state, null, 2);
+            
+            const body = {
+                message: 'Update whitelist config via Dashboard',
+                content: encodeUnicode(jsonString)
+            };
+            if (fileSHA) body.sha = fileSHA;
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.FILE_PATH}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'שגיאה בשמירה');
+
+                fileSHA = data.content.sha; // עדכון ה-SHA לשמירה הבאה
+                clearChangeStatus();
+                hideLoader();
+                showToast('נשמר בהצלחה ב-GitHub! 🎉', 'success');
+
+            } catch (err) {
+                hideLoader();
+                showToast(`שגיאה בשמירה: ${err.message}`, 'error');
+            }
+        }
+
+        // ==========================================
+        // UI RENDERING LOGIC (אותה לוגיקה מעולה ממקודם)
+        // ==========================================
         function switchTab(tab) {
             document.getElementById('view-global').classList.add('hidden');
             document.getElementById('view-apps').classList.add('hidden');
-            
             document.getElementById('tab-global').className = "w-full text-right px-5 py-4 rounded-2xl bg-transparent hover:bg-slate-800 border border-transparent text-slate-400 hover:text-white smooth flex items-center justify-between";
             document.getElementById('tab-apps').className = "w-full text-right px-5 py-4 rounded-2xl bg-transparent hover:bg-slate-800 border border-transparent text-slate-400 hover:text-white smooth flex items-center justify-between";
             
-            // Activate selected
             document.getElementById(`view-${tab}`).classList.remove('hidden');
-            const activeTab = document.getElementById(`tab-${tab}`);
-            activeTab.className = "w-full text-right px-5 py-4 rounded-2xl bg-primary/10 border border-primary/30 text-primary font-medium smooth flex items-center justify-between shadow-lg";
+            document.getElementById(`tab-${tab}`).className = "w-full text-right px-5 py-4 rounded-2xl bg-primary/10 border border-primary/30 text-primary font-medium smooth flex items-center justify-between shadow-lg";
         }
 
-        // --- 4. רינדור רשימה גלובלית ---
         function renderGlobal() {
             const list = document.getElementById('globalList');
             document.getElementById('globalCountBadge').innerText = state.global_whitelist.length;
@@ -245,7 +412,6 @@
             if (e.key === 'Enter') addGlobalDomain();
         });
 
-        // --- 5. רינדור אפליקציות ---
         function renderApps(filterText = '') {
             const list = document.getElementById('appsList');
             const appKeys = Object.keys(state.apps);
@@ -254,14 +420,12 @@
             let html = '';
             appKeys.forEach(pkg => {
                 if (filterText && !pkg.toLowerCase().includes(filterText.toLowerCase())) return;
-                
                 const app = state.apps[pkg];
                 const isCustom = app.policy === 'custom';
                 
                 html += `
                 <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 hover:bg-slate-800/60 smooth group">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        
                         <div class="flex items-center gap-4">
                             <div class="h-12 w-12 bg-slate-900 rounded-xl border border-slate-700 flex items-center justify-center group-hover:border-slate-500 smooth shadow-inner">
                                 <i class="ph ph-android-logo text-2xl text-slate-400"></i>
@@ -271,7 +435,6 @@
                                 <p class="text-xs text-slate-500 mt-0.5">Package ID</p>
                             </div>
                         </div>
-
                         <div class="flex items-center gap-3">
                             <select onchange="changePolicy('${pkg}', this.value)" 
                                     class="bg-slate-900 border ${policies[app.policy].colors.split(' ')[2]} ${policies[app.policy].colors.split(' ')[0]} text-sm rounded-xl px-4 py-2.5 outline-none cursor-pointer appearance-none text-center font-medium shadow-sm">
@@ -280,7 +443,6 @@
                                 <option value="global" ${app.policy === 'global' ? 'selected' : ''}>${policies.global.name}</option>
                                 <option value="custom" ${app.policy === 'custom' ? 'selected' : ''}>${policies.custom.name}</option>
                             </select>
-                            
                             <button onclick="removeApp('${pkg}')" class="h-10 w-10 bg-slate-900 hover:bg-red-500/10 border border-slate-700 hover:border-red-500/30 text-slate-400 hover:text-red-400 rounded-xl flex items-center justify-center smooth outline-none">
                                 <i class="ph ph-trash text-lg"></i>
                             </button>
@@ -289,11 +451,6 @@
 
                     ${isCustom ? `
                     <div class="mt-5 pt-5 border-t border-slate-700/50">
-                        <div class="flex items-center gap-2 mb-3">
-                            <i class="ph-fill ph-lock-key text-purple-400"></i>
-                            <span class="text-sm font-medium text-purple-300">כתובות מורשות (Custom Whitelist)</span>
-                        </div>
-                        
                         <div class="flex flex-wrap gap-2 mb-4">
                             ${(app.custom_whitelist ||[]).map((domain, idx) => `
                                 <div class="flex items-center gap-1.5 bg-purple-500/10 border border-purple-500/20 text-purple-200 px-3 py-1.5 rounded-lg text-sm ltr-text">
@@ -302,28 +459,22 @@
                                 </div>
                             `).join('')}
                         </div>
-
                         <div class="flex gap-2 relative">
-                            <input type="text" id="customInput-${pkg.replace(/\./g, '-')}" placeholder="הוסף כתובת (למשל api.server.com)..." 
+                            <input type="text" id="customInput-${pkg.replace(/\./g, '-')}" placeholder="הוסף כתובת ל-Custom Whitelist..." 
                                    class="flex-grow bg-slate-900 border border-slate-700 focus:border-purple-500 rounded-xl px-4 py-2 text-sm text-white outline-none smooth ltr-text placeholder:text-right"
                                    onkeypress="if(event.key === 'Enter') addCustomDomain('${pkg}')">
                             <button onclick="addCustomDomain('${pkg}')" class="bg-slate-700 hover:bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium smooth">הוסף</button>
                         </div>
                     </div>
                     ` : ''}
-                </div>
-                `;
+                </div>`;
             });
             
             if(!html) html = `<div class="text-center py-10 text-slate-500">לא נמצאו אפליקציות...</div>`;
             list.innerHTML = html;
         }
 
-        // --- 6. פעולות רמת האפליקציה ---
-        function filterApps() {
-            renderApps(document.getElementById('searchInput').value);
-        }
-
+        function filterApps() { renderApps(document.getElementById('searchInput').value); }
         function toggleAddAppForm() {
             const form = document.getElementById('addAppForm');
             form.classList.toggle('hidden');
@@ -333,9 +484,8 @@
         function addNewApp() {
             const pkg = document.getElementById('newAppPackage').value.trim();
             const policy = document.getElementById('newAppPolicy').value;
-            
-            if (!pkg) return alert('נא להזין Package Name');
-            if (state.apps[pkg]) return alert('אפליקציה זו כבר קיימת ברשימה!');
+            if (!pkg) return showToast('נא להזין Package Name', 'error');
+            if (state.apps[pkg]) return showToast('אפליקציה זו כבר קיימת!', 'error');
 
             state.apps[pkg] = { policy: policy };
             if (policy === 'custom') state.apps[pkg].custom_whitelist =[];
@@ -359,17 +509,15 @@
             if (newPolicy === 'custom' && !state.apps[pkg].custom_whitelist) {
                 state.apps[pkg].custom_whitelist =[];
             } else if (newPolicy !== 'custom') {
-                delete state.apps[pkg].custom_whitelist; // ננקה כדי לא לנפח את ה-JSON סתם
+                delete state.apps[pkg].custom_whitelist;
             }
             triggerChange();
             renderApps();
         }
 
         function addCustomDomain(pkg) {
-            const inputId = `customInput-${pkg.replace(/\./g, '-')}`;
-            const input = document.getElementById(inputId);
+            const input = document.getElementById(`customInput-${pkg.replace(/\./g, '-')}`);
             const val = input.value.trim().toLowerCase();
-            
             if (val && !state.apps[pkg].custom_whitelist.includes(val)) {
                 state.apps[pkg].custom_whitelist.push(val);
                 triggerChange();
@@ -383,36 +531,39 @@
             renderApps();
         }
 
-        // --- 7. ניהול שינויים ותצוגת JSON ---
-        function triggerChange() {
-            document.getElementById('saveIndicator').classList.remove('hidden');
-            document.getElementById('saveIndicator').classList.add('flex');
+        // ==========================================
+        // APP INITIALIZATION
+        // ==========================================
+        async function initApp() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            
+            document.getElementById('repoNameDisplay').innerText = `${CONFIG.GITHUB_USER} / ${CONFIG.GITHUB_REPO}`;
+
+            if (code) {
+                // המשתמש חוזר מגיטהאב עם קוד OAuth
+                await handleOAuthCallback(code);
+            } else {
+                githubToken = localStorage.getItem('gh_token');
+                if (githubToken) {
+                    // המשתמש מחובר ויש טוקן - נמשוך נתונים
+                    loadFromGitHub();
+                } else {
+                    // המשתמש לא מחובר - מסך הלוגין כבר גלוי
+                }
+            }
         }
 
-        function exportJSON() {
-            const jsonStr = JSON.stringify(state, null, 2);
-            document.getElementById('jsonOutput').textContent = jsonStr;
-            document.getElementById('jsonModal').classList.remove('hidden');
-            document.getElementById('jsonModal').classList.add('flex');
-        }
+        // התנעה
+        window.onload = initApp;
 
-        function closeJSON() {
-            document.getElementById('jsonModal').classList.add('hidden');
-            document.getElementById('jsonModal').classList.remove('flex');
-        }
-
-        function copyJSON() {
-            const jsonStr = document.getElementById('jsonOutput').textContent;
-            navigator.clipboard.writeText(jsonStr).then(() => {
-                alert('הקוד הועתק בהצלחה! אפשר להדביק ב-GitHub.');
-            });
-        }
-
-        // אתחול התחלתי
-        window.onload = () => {
-            renderGlobal();
-            renderApps();
-        };
+        // מניעת עזיבה אם יש שינויים שלא נשמרו
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
     </script>
 </body>
