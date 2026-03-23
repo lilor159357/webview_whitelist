@@ -117,7 +117,7 @@
                     </div>
                 </header>
 
-                <!-- Search Input + Dropdown (NEW) -->
+                <!-- Search Input + Dropdown -->
                 <div class="relative z-50" id="searchContainer">
                     <i class="ph ph-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none"></i>
                     <input type="text" id="searchInput" onkeyup="handleSearchInput()" placeholder="חפש בחנות Play או סנן רשימה מקומית..." 
@@ -183,9 +183,9 @@
             GITHUB_REPO: 'webview_whitelist',
             FILE_PATH: 'whitelist.json',
             ALLOWED_USERS:['lilor159357', 'chanuta159-design'],
-            GITHUB_CLIENT_ID: 'Iv23liPvUSGjIkdCM9C7', // ה-OAuth הישן שלך (עובד עכשיו!)
-            GOOGLE_API_KEY: 'AIzaSyD3YjTEIwAnBBIV7LzuRcQVHmTTB27og9o', // מהקוד הקודם שלך
-            SEARCH_ENGINE_ID: 'b769d79cff32c40de' // מהקוד הקודם שלך
+            GITHUB_CLIENT_ID: 'Iv23liPvUSGjIkdCM9C7',
+            GOOGLE_API_KEY: 'AIzaSyD3YjTEIwAnBBIV7LzuRcQVHmTTB27og9o', 
+            SEARCH_ENGINE_ID: 'b769d79cff32c40de' 
         };
 
         const policies = {
@@ -201,12 +201,11 @@
         let hasUnsavedChanges = false;
         let debounceTimer = null;
 
-        // Helpers
         const encodeUnicode = (str) => btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
         const decodeUnicode = (str) => decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 
         // ==========================================
-        // UI COMPONENTS (Toasts & Loaders)
+        // UI COMPONENTS
         // ==========================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
@@ -343,7 +342,7 @@
         }
 
         // ==========================================
-        // APP RENDERING & TABS
+        // APP RENDERING
         // ==========================================
         function switchTab(tab) {
             document.getElementById('view-global').classList.add('hidden');
@@ -391,22 +390,30 @@
 
             let html = '';
             appKeys.forEach(pkg => {
-                // Also search inside custom whitelist if filtering
                 const app = state.apps[pkg];
                 const customMatch = app.custom_whitelist?.some(domain => domain.includes(filterText.toLowerCase()));
-                if (filterText && !pkg.toLowerCase().includes(filterText.toLowerCase()) && !customMatch) return;
+                const nameMatch = app.name?.toLowerCase().includes(filterText.toLowerCase());
+                
+                // תמיכה בחיפוש חכם גם לפי שם האפליקציה וגם לפי החבילה
+                if (filterText && !pkg.toLowerCase().includes(filterText.toLowerCase()) && !customMatch && !nameMatch) return;
                 
                 const isCustom = app.policy === 'custom';
+                const displayName = app.name || pkg;
+                const packageSubtitle = app.name ? pkg : 'Package ID';
+                
+                // הצגת אייקון מותאם אישית או לוגו ברירת מחדל של אנדרואיד
+                const displayIcon = app.icon 
+                    ? `<img src="${app.icon}" class="w-12 h-12 rounded-xl object-cover border border-slate-700 shadow-inner">` 
+                    : `<div class="h-12 w-12 bg-slate-900 rounded-xl border border-slate-700 flex items-center justify-center group-hover:border-slate-500 smooth shadow-inner"><i class="ph ph-android-logo text-2xl text-slate-400"></i></div>`;
                 
                 html += `
                 <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 hover:bg-slate-800/60 smooth group">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <div class="h-12 w-12 bg-slate-900 rounded-xl border border-slate-700 flex items-center justify-center group-hover:border-slate-500 smooth shadow-inner">
-                                <i class="ph ph-android-logo text-2xl text-slate-400"></i>
-                            </div>
+                            ${displayIcon}
                             <div>
-                                <h3 class="font-bold text-white ltr-text text-base">${pkg}</h3>
+                                <h3 class="font-bold text-white ltr-text text-base">${displayName}</h3>
+                                <p class="text-xs text-slate-500 mt-0.5 ltr-text font-mono">${packageSubtitle}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
@@ -453,7 +460,7 @@
         // ==========================================
         function handleSearchInput() {
             const query = document.getElementById('searchInput').value.trim();
-            renderApps(query); // 1. Local filter instantly
+            renderApps(query); 
 
             const resultsDiv = document.getElementById('googleSearchResults');
             clearTimeout(debounceTimer);
@@ -463,7 +470,6 @@
                 return;
             }
             
-            // 2. Google Search Debounce (500ms)
             debounceTimer = setTimeout(() => searchGoogleForApps(query), 500);
         }
 
@@ -496,10 +502,10 @@
                 try {
                     const url = new URL(app.link);
                     const pkgId = url.searchParams.get('id');
-                    if (!pkgId) return; // Only process valid play store links
+                    if (!pkgId) return; 
                     
                     const title = app.title.split(' - ')[0].split(' – ')[0].trim();
-                    const icon = app.pagemap?.cse_image?.[0]?.src || ''; // Fallback to empty
+                    const icon = app.pagemap?.cse_image?.[0]?.src || ''; 
 
                     resultsHTML += `
                     <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800 smooth cursor-pointer border-b border-slate-700/50 last:border-0"
@@ -521,7 +527,6 @@
             resultsDiv.innerHTML = resultsHTML || `<div class="p-4 text-center text-slate-500">לא נמצאו אפליקציות תקינות.</div>`;
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             const container = document.getElementById('searchContainer');
             if (!container.contains(e.target)) {
@@ -530,7 +535,7 @@
         });
 
         // ==========================================
-        // ADD APP MODAL LOGIC
+        // ADD APP MODAL LOGIC (UPDATED)
         // ==========================================
         function promptAddAppManual(pkg) {
             promptAddApp(pkg, 'אפליקציה מותאמת אישית', '');
@@ -542,7 +547,10 @@
             }
             
             const modal = document.getElementById('addAppModal');
+            // שומרים את הנתונים על המודל כדי להשתמש בהם בעת האישור
             modal.dataset.pkg = pkg;
+            modal.dataset.appName = title;
+            modal.dataset.appIcon = iconUrl;
             
             document.getElementById('addAppModalTitle').innerText = title;
             document.getElementById('addAppModalPkg').innerText = pkg;
@@ -569,9 +577,17 @@
         function confirmAddApp() {
             const modal = document.getElementById('addAppModal');
             const pkg = modal.dataset.pkg;
+            const appName = modal.dataset.appName;
+            const appIcon = modal.dataset.appIcon;
             const policy = document.getElementById('addAppModalPolicy').value;
 
+            // יצירת האובייקט והשמת המדיניות
             state.apps[pkg] = { policy: policy };
+            
+            // השמת שם ואייקון אם קיימים (ולא אפליקציה ידנית רגילה)
+            if (appName && appName !== 'אפליקציה מותאמת אישית') state.apps[pkg].name = appName;
+            if (appIcon) state.apps[pkg].icon = appIcon;
+
             if (policy === 'custom') state.apps[pkg].custom_whitelist =[];
 
             triggerChange();
@@ -594,6 +610,10 @@
         }
 
         function changePolicy(pkg, newPolicy) {
+            // שומרים על המידע הקיים (שם ואייקון)
+            const appName = state.apps[pkg].name;
+            const appIcon = state.apps[pkg].icon;
+            
             state.apps[pkg].policy = newPolicy;
             if (newPolicy === 'custom' && !state.apps[pkg].custom_whitelist) {
                 state.apps[pkg].custom_whitelist =[];
