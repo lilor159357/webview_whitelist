@@ -1,6 +1,7 @@
 {
   "global_whitelist": [
-    "kolhalashon.com"
+    "kolhalashon.com",
+    "mishnatyosef.org"
   ],
   "apps": {
     "com.waze": {
