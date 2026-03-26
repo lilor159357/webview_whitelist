@@ -36,6 +36,9 @@
     },
     "com.app.max": {
       "policy": "open"
+    },
+    "com.meld.app": {
+      "policy": "open"
     }
   }
 }
