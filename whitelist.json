@@ -33,6 +33,9 @@
       "policy": "open",
       "name": "מתמחים טופ",
       "icon": "https://play-lh.googleusercontent.com/GYvIesmegDisgbA4NFWP5keBeAtiqFWTljPAenIxzExzSUZhIcFM_uLGqZwscbh9j3M"
+    },
+    "com.app.max": {
+      "policy": "open"
     }
   }
 }
