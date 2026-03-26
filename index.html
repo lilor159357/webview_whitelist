@@ -485,16 +485,17 @@
                 const data = await res.json();
                 
                 if (data.items && data.items.length > 0) {
-                    displayGoogleResults(data.items);
+                    // העברנו לכאן גם את ה-query
+                    displayGoogleResults(data.items, query);
                 } else {
-                    resultsDiv.innerHTML = `<div class="p-4 text-center text-slate-500 text-sm">לא נמצאו אפליקציות חדשות בחנות Play. <button onclick="promptAddAppManual('${query}')" class="text-primary hover:underline block mt-2">הוסף ידנית את '${query}'</button></div>`;
+                    resultsDiv.innerHTML = `<div class="p-4 text-center text-slate-500 text-sm">לא נמצאו אפליקציות חדשות בחנות Play. <button onclick="promptAddAppManual('${query}')" class="text-primary hover:underline block mt-2 font-medium">הוסף ידנית את '${query}'</button></div>`;
                 }
             } catch (err) {
                 resultsDiv.innerHTML = `<div class="p-4 text-center text-red-400">שגיאה בחיפוש מול גוגל.</div>`;
             }
         }
 
-        function displayGoogleResults(items) {
+        function displayGoogleResults(items, query) {
             const resultsDiv = document.getElementById('googleSearchResults');
             let resultsHTML = '';
             
@@ -523,6 +524,19 @@
                     </div>`;
                 } catch (e) { }
             });
+
+            // הוספת כפתור "הוסף ידנית" בתחתית רשימת התוצאות
+            if (resultsHTML) {
+                // מונע בעיות של גרשיים ב-query
+                const safeQuery = query.replace(/'/g, "\\'"); 
+                resultsHTML += `
+                <div class="p-3 bg-slate-900/50 border-t border-slate-700 text-center mt-1 rounded-b-xl flex items-center justify-center gap-2">
+                    <span class="text-slate-400 text-sm">לא מצאת?</span>
+                    <button onclick="promptAddAppManual('${safeQuery}')" class="text-primary hover:text-blue-400 hover:underline text-sm font-bold outline-none">
+                        הוסף ידנית: ${query}
+                    </button>
+                </div>`;
+            }
 
             resultsDiv.innerHTML = resultsHTML || `<div class="p-4 text-center text-slate-500">לא נמצאו אפליקציות תקינות.</div>`;
         }
