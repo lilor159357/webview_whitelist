@@ -2,7 +2,8 @@
   "global_whitelist": [
     "kolhalashon.com",
     "mishnatyosef.org",
-    "kosharot.co.il"
+    "kosharot.co.il",
+    "hamichlol.org.il"
   ],
   "apps": {
     "com.waze": {
