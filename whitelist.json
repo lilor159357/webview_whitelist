@@ -47,6 +47,11 @@
       "policy": "open",
       "name": "מרכז המכשירים שלי מבית Google",
       "icon": "https://play-lh.googleusercontent.com/GCsSBgR93cedwf2weP7s6VPsBitwir9ioOO0DYjLydIjdCkfQEv0GQzK34ky96L6XMc"
+    },
+    "com.google.android.gms": {
+      "policy": "open",
+      "name": "‏שירותי Google Play",
+      "icon": "https://play-lh.googleusercontent.com/f6ZSUJrtL5uniwWCTp1OeJj8MdoDaSTqi2XFyy9A0yPv6DpBo2giisRKDpXD9qk66KE"
     }
   }
 }
