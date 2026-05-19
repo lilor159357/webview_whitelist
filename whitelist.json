@@ -52,6 +52,11 @@
       "policy": "open",
       "name": "‏שירותי Google Play",
       "icon": "https://play-lh.googleusercontent.com/f6ZSUJrtL5uniwWCTp1OeJj8MdoDaSTqi2XFyy9A0yPv6DpBo2giisRKDpXD9qk66KE"
+    },
+    "com.cheetahcx.app": {
+      "policy": "open",
+      "name": "Cheetah CX",
+      "icon": "https://play-lh.googleusercontent.com/lYceXOaY0qtL_mS9jJVNNvyRtEdzjbtX5lVz4JSxnwSNbGuiDteBqUWmsl1ZXXMp7w"
     }
   }
 }
