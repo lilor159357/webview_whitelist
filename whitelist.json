@@ -57,6 +57,9 @@
       "policy": "open",
       "name": "Cheetah CX",
       "icon": "https://play-lh.googleusercontent.com/lYceXOaY0qtL_mS9jJVNNvyRtEdzjbtX5lVz4JSxnwSNbGuiDteBqUWmsl1ZXXMp7w"
+    },
+    "com.lilor159.gemini": {
+      "policy": "open"
     }
   }
 }
