@@ -61,6 +61,11 @@
     },
     "com.lilor159.gemini": {
       "policy": "open"
+    },
+    "com.microsoft.office.excel": {
+      "policy": "open",
+      "name": "Microsoft Excel: Spreadsheets",
+      "icon": "https://play-lh.googleusercontent.com/Wbq7u5yCFe9dqtZv1Gp3E1OefzPmNKoYRJ1m0J9hVyqfhxd9c-CC_mJZn3ZVl_mE-uTmeVN8CiRMQ6ZgC3MNb0o"
     }
   }
 }
